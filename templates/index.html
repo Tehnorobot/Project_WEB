@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+   .text {
+    text-align: center;
+    background: #ffffff;
+    border: 5px solid #ffffff;
+   }
+   table {
+   margin-left: auto;
+   margin-right: auto;
+   margin-top: 20px;
+   }
+   td {
+   padding: 10px;
+   }
+   th {
+   padding: 10px;
+   text-align: center;
+</style>
+<div class="text">
+<h1>Рецепты приготовления - кулинарные рецепты</h1>
+</div>
+<div class="row" style="margin: 10px; border: 5px solid #FFFFE0; background: #FFFFE0">
+    <div class="offset-md-3 col-md-6">
+<div align="center" id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <li type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></li>
+    {% for i in range(len_data - 1) %}
+    <li type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ i + 1 }}"></li>
+    {% endfor %}
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      {% set url_path = "static/img_rec/" + val_1.name_photo %}
+      <a href="/show/{{ val_1.id }}"><img src={{ url_path }} class="d-block w-100" height="280" text-align="center" alt="Изображение">
+    </div>
+    {% for i in data[1::] %}
+      {% set url_path = "static/img_rec/" + i.name_photo %}
+    <div class="carousel-item">
+      <a href="/show/{{ i.id }}"><img src={{ url_path }} class="d-block w-100" height="280" text-align="center" alt="Изображение">
+    </div>
+    {% endfor %}
+  </div>
+  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+</div>
+</div>
+{% if current_user.is_authenticated %}
+            <div class="alert alert-primary" role="alert" >
+              Пользователь: <a href="/logout" class="alert-link">{{ current_user.name }}</a>
+            </div>
+        {% else %}
+        <center>
+            <p>
+                <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
+                <a class="btn btn-success" href="/login">Войти</a>
+            </p>
+        </center>
+{% endif %}
+{% if current_user.is_authenticated %}
+<center>
+    <a href="add_recipes" class="btn btn-secondary">Добавить рецепт</a>
+</center>
+{% endif %}
+{% for item_rec in data %}
+ <table>
+   <colgroup>
+     <col span="1" style="background:Khaki" width=400px>
+     <col style="background-color:LightCyan" width=400px>
+   </colgroup>
+   <tr>
+   {% set url_path = "static/img_rec/" + item_rec.name_photo %}
+     <th rowspan="3" class="first"><img src={{ url_path }} alt="Изображение блюда" align="left" width="395" 
+     height="330" style="padding: 5px"/></th>
+     <th><a href="/show/{{ item_rec.id }}" class="alert-link">{{ item_rec.name_recipe }}</a></th>
+   </tr>
+   <tr>
+   <td>
+     <p> {{ item_rec.about }} </p>
+   </td>
+   </tr>
+   <tr>
+   <td style="text-align:right">Количество просмотров: {{ item_rec.coeff_popular }}</td>
+   </tr>
+ </table>
+ {% if current_user.id != 1 %}
+     {% if current_user.is_authenticated and current_user == item_rec.user %}
+     <div align="center">
+         <a href="/edit_recipes/{{ item_rec.id }}" class="btn btn-warning">
+             Изменить
+         </a>
+         <a href="/recipes_delete/{{ item_rec.id }}" class="btn btn-danger">
+             Удалить
+         </a>
+     </div>
+     {% endif %}
+ {% endif %} 
+ {% if current_user.id == 1 %}
+     <div align="center">
+         <a href="/edit_recipes/{{ item_rec.id }}" class="btn btn-warning">
+             Изменить
+         </a>
+         <a href="/recipes_delete/{{ item_rec.id }}" class="btn btn-danger">
+             Удалить
+         </a>
+     </div>
+{% endif %}
+{% endfor %}
+{% endblock %}
